@@ -1,0 +1,88 @@
+
+{% load static %}
+{% load avatar_tags %}
+
+{% include "header.html" %}
+{% include "teacher_header.html" %}
+
+<div class="container-fluid">
+  
+
+  <div class="row py-3">
+    <div class="col d-flex justify-content-end">
+      {% avatar user 65 class="rounded-circle" id="user_avatar" %}
+    </div>
+
+
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+  <div class="align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h5 text-info text-capitalize fw-bold">{{ request.user.first_name }} {{ request.user.last_name }}</h1>
+  </div>
+  <div class="container-fluid">
+    <div class="row g-5">
+
+      <div clas="col">
+        <div class="card shadow-lg text-center">
+          <form action="{% url 'confirm_url' assc.id %}" method="post">
+            {% csrf_token %}
+    <div class="card mb-3">
+
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead class="bg-info text-light fw-bold">
+                <tr>
+                    <th>Student name</th>
+                    <th></th>
+                </tr>
+              </thead>
+                <tbody>
+                    {% for att in att_list %}
+                    <tr>
+                    <td>{{att.student.user.first_name}} {{att.student.user.last_name}}</td>
+                    <td>
+                        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+
+                                {% if att.status %}
+                                <label class="btn btn-sm btn-outline-info text-dark fw-bold mx-2">
+                                    <input type="radio" name="{{ att.student.USN }}"   value="present" checked> Present
+                                </label>
+
+                                <label class="btn btn-sm btn-outline-warning text-dark fw-dark">
+                                    <input type="radio" name="{{ att.student.USN }}"   value="absent"> Absent
+                                </label>
+                                {% else %}
+                                <label class="btn btn-sm btn-outline-info text-dark fw-bold">
+                                    <input type="radio" name="{{ att.student.USN }}"   value="present" > Present
+                                </label>
+
+                                <label class="btn btn-sm btn-outline-danger active">
+                                    <input type="radio" name="{{ att.student.USN }}"   value="absent" checked> Absent
+                                </label>
+                                {% endif %}
+                        </div>
+                    </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+
+    <input class="btn btn-outline-info text-dark fw-bold my-4" type="submit" value="Submit">
+</form>
+        </div>
+      </div>
+
+
+        
+    </div>
+
+</div> 
+</main> 
+</div>
+</div>
+
+{% include "footer.html" %}
