@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.http import HttpResponseRedirect
 from django.urls import path
 
-from .models import Dept, Class, Student, Attendance, Course, Teacher, Assign, AssignTime, AttendanceClass, StudentCourse, User, AttendanceRange,  NotificationTeacher, NotificationStudent
+from .models import Dept, Class, Student, Attendance, Course, Teacher, Assign, AssignTime, AttendanceClass, StudentCourse, User, AttendanceRange,  NotificationTeacher, NotificationStudent, AttendanceTotal
 
 
 # Register your models here.
@@ -38,6 +38,20 @@ class UserAdminConfig(UserAdmin):
             }
         ),
     )
+
+class AttendanceTotalAdmin(admin.ModelAdmin):
+    list_display = ('id', 'course', 'student', 'attendance', 'classes_to_attend')
+    list_filter = ('course', 'student', )
+    search_fields = ('student__name', 'course__name')
+
+    def attendance(self, obj):
+        return obj.attendance
+
+    def classes_to_attend(self, obj):
+        return obj.classes_to_attend
+
+    attendance.short_description = 'Attendance (%)'
+    classes_to_attend.short_description = 'Classes to Attend'
 
 
 def daterange(start_date, end_date):
@@ -120,3 +134,4 @@ admin.site.register(Assign, AssignAdmin)
 admin.site.register(NotificationTeacher)
 admin.site.register(NotificationStudent)
 admin.site.register(AttendanceRange)
+admin.site.register(AttendanceTotal, AttendanceTotalAdmin)

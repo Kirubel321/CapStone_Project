@@ -314,3 +314,22 @@ class SNotification(models.Model):
     
     def __str__(self):
         return str(self.student_id)
+
+class TNotification(models.Model):
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE)
+    # course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.teacher_id)
+
+
+@receiver(post_save, sender=AttendanceClass)
+def create_notification(sender, instance, created, **kwargs):
+    if created and instance.status == 0:
+        teacher = instance.assign.teacher
+        message = f"Dear {teacher.user.first_name}, you missed taking attendance for {instance.assign.course.name} on {instance.date}. Please ensure to take attendance."
+        notification = TNotification(teacher=teacher, message=message)
+        notification.save()

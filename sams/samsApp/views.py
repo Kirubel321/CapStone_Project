@@ -4,10 +4,10 @@ from .models import User, Dept, Class, Student, Attendance, Course, Teacher, Ass
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
-# from .forms import TeacherCustomUserCreationForm,AdminCustomUserCreationForm, StudentCustomUserCreationForm, StudentForm, ClassForm, DeptForm, NotificationStudentForm,  NotificationTeacherForm, ClassForm, CourseForm 
 from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+
 
 # Create your views here.
 
