@@ -41,7 +41,7 @@ class UserAdminConfig(UserAdmin):
 
 class AttendanceTotalAdmin(admin.ModelAdmin):
     list_display = ('id', 'course', 'student', 'attendance', 'classes_to_attend')
-    list_filter = ('course', 'student', )
+    list_filter = ('course', 'student','student__batch')
     search_fields = ('student__name', 'course__name')
 
     def attendance(self, obj):
@@ -100,6 +100,10 @@ class AssignAdmin(admin.ModelAdmin):
     ordering = ['class_id__dept__name', 'class_id__id', 'course__id']
 
 
+class StudentAdmin(admin.ModelAdmin):
+    list_display = ['USN', 'user', 'class_id', 'gender', 'date_of_birth', 'batch']
+    list_filter = ['class_id', 'gender', 'batch']
+    search_fields = ['USN', 'USN']
 
 # class StudentAdmin(admin.ModelAdmin):
 #     list_display = ('USN', 'user__name', 'class_id')
@@ -115,11 +119,6 @@ class AssignAdmin(admin.ModelAdmin):
 #     list_display = ('user__name', 'dept')
 #     search_fields = ('user__name', 'dept__name')
 #     ordering = ['dept__name', 'user__name']
-
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('USN', 'class_id')
-    search_fields = ('USN', 'class_id__id', 'class_id__dept__name')
-    ordering = ['class_id__dept__name', 'class_id__id', 'USN']
 
 # class AttendanceRangeAdmin(admin.ModelAdmin):
 

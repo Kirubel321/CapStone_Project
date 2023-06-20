@@ -9,9 +9,24 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-
+from django.contrib.auth import views as auth_views
 
 # Create your views here.
+
+class CustomPasswordResetView(auth_views.PasswordResetView):
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+
+class CustomPasswordResetDoneView(auth_views.PasswordResetDoneView):
+    template_name = 'registration/password_reset_done.html'
+
+class CustomPasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    template_name = 'registration/password_reset_confirm.html'
+
+class CustomPasswordResetCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'registration/password_reset_complete.html'
+
 
 def home_view(request):
     return render(request, 'index.html')
@@ -55,18 +70,15 @@ def logoutview(request):
 
 
 def register_view(request):
-    if request.user.is_authenticated:
-        return redirect('login_url')
-    else:
-        form = CustomUserCreationForm()
-        if request.method == 'POST':
-            form = CustomUserCreationForm(request.POST)
-            if form.is_valid():
-                form.save()
-                user = form.cleaned_data.get('username')
-                messages.success(request, 'Account was created for ' + str(user) )
-                return redirect('login_url')
-        context = {'form':form, 'message': messages}
+    form = CustomUserCreationForm()
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.cleaned_data.get('username')
+            messages.success(request, 'Account was created for')
+            return redirect('login_url')
+    context = {'form':form, 'message': messages}
     return render(request, 'registration.html', context)
 
 
@@ -100,24 +112,6 @@ def student_attendance_detail(request, stud_id, course_id):
 
 @login_required()
 def student_notification(request, student_id):
-    @receiver(post_save, sender=AttendanceClass)
-    def check_attendance(sender, instance, created, **kwargs):
-        if created:
-            check_student_attendance()
-    def check_student_attendance():
-        today = timezone.localdate()
-        students = Student.objects.all()
-        for student in students:
-            attendance_total = AttendanceTotal.objects.get(student=student)
-            attendance_percentage = attendance_total.attendance        
-            if attendance_percentage < 75:
-                message = f"Your attendance percentage is {attendance_percentage}%. Please improve your attendance."
-                # Send notification to the student (e.g., through email, SMS, or a notification in the UI)
-                # You can use a notification library or implement your own notification system.
-                # Example using Django messages framework:
-                messages.warning(student.user, message)
-    messages_list = messages.get_messages(request)
-    message_texts = [str(message) for message in messages_list]
     stud = Student.objects.get(USN=student_id)
     ass_list = Assign.objects.filter(class_id_id=stud.class_id)
     att_list = []
@@ -128,7 +122,7 @@ def student_notification(request, student_id):
             a = SNotification(student=stud, course=ass.course)
             a.save()
         att_list.append(a)
-    return render(request, 'student_notification.html', {'studentNote':att_list,'messages': message_texts})
+    return render(request, 'student_notification.html', {'studentNote':att_list})
  
 
 
