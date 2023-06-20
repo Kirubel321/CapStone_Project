@@ -42,7 +42,7 @@ class UserAdminConfig(UserAdmin):
 class AttendanceTotalAdmin(admin.ModelAdmin):
     list_display = ('id', 'course', 'student', 'attendance', 'classes_to_attend')
     list_filter = ('course', 'student','student__batch')
-    search_fields = ('student__name', 'course__name')
+    search_fields = ['course__name']
 
     def attendance(self, obj):
         return obj.attendance
