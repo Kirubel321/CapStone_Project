@@ -2,7 +2,7 @@ from django.db import models
 import math
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save
 from datetime import timedelta
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
@@ -119,6 +119,7 @@ class Student(models.Model):
     USN = models.CharField(primary_key='True', max_length=100)
     gender = models.CharField(max_length=50, choices=gender_choice)
     date_of_birth = models.DateField(null=True)
+    # batch = models.CharField(max_length=50, default="B1")
 
     def __str__(self):
         return self.USN
@@ -333,3 +334,30 @@ def create_notification(sender, instance, created, **kwargs):
         message = f"Dear {teacher.user.first_name}, you missed taking attendance for {instance.assign.course.name} on {instance.date}. Please ensure to take attendance."
         notification = TNotification(teacher=teacher, message=message)
         notification.save()
+
+
+
+
+def check_teacher_attendance():
+    today = timezone.localdate()
+    assignments = Assign.objects.all()
+    for assignment in assignments:
+        assign_time = AssignTime.objects.filter(assign=assignment).first()
+        attendance_class = AttendanceClass.objects.filter(assign=assignment, date=today).first()
+        if assign_time and not attendance_class:
+            teacher = assignment.teacher
+            message = f"You have missed taking attendance for {assignment.course.shortname} - {assignment.class_id}."
+            # Send notification to the teacher (e.g., through email, SMS, or a notification in the UI)
+            # Example using Django messages framework:
+            messages.warning(teacher.user, message)
+
+@receiver(post_save, sender=AttendanceClass)
+def check_attendance(sender, instance, created, **kwargs):
+    if created:
+        check_student_attendance()
+
+@receiver(post_save, sender=AssignTime)
+def check_teacher_attendance(sender, instance, created, **kwargs):
+    if created:
+        check_teacher_attendance()
+

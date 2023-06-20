@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.dispatch import receiver
+from django.db.models.signals import post_save
 
 
 # Create your views here.
@@ -98,6 +100,24 @@ def student_attendance_detail(request, stud_id, course_id):
 
 @login_required()
 def student_notification(request, student_id):
+    @receiver(post_save, sender=AttendanceClass)
+    def check_attendance(sender, instance, created, **kwargs):
+        if created:
+            check_student_attendance()
+    def check_student_attendance():
+        today = timezone.localdate()
+        students = Student.objects.all()
+        for student in students:
+            attendance_total = AttendanceTotal.objects.get(student=student)
+            attendance_percentage = attendance_total.attendance        
+            if attendance_percentage < 75:
+                message = f"Your attendance percentage is {attendance_percentage}%. Please improve your attendance."
+                # Send notification to the student (e.g., through email, SMS, or a notification in the UI)
+                # You can use a notification library or implement your own notification system.
+                # Example using Django messages framework:
+                messages.warning(student.user, message)
+    messages_list = messages.get_messages(request)
+    message_texts = [str(message) for message in messages_list]
     stud = Student.objects.get(USN=student_id)
     ass_list = Assign.objects.filter(class_id_id=stud.class_id)
     att_list = []
@@ -108,7 +128,7 @@ def student_notification(request, student_id):
             a = SNotification(student=stud, course=ass.course)
             a.save()
         att_list.append(a)
-    return render(request, 'student_notification.html', {'studentNote':att_list})
+    return render(request, 'student_notification.html', {'studentNote':att_list,'messages': message_texts})
  
 
 

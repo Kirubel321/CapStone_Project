@@ -29,6 +29,38 @@
               <h3 class=" h5 text-light text-center fw-bold">
                 Notification</h3>
             </div>
+              <div class="card-body">
+                <div class="card col-5">
+                  <h5 class=" h6 card-header text-center bg-warning text-dark fw-bold">Notification </h5>
+                  <div class="card-body">
+                    <p>
+                     <span class="fw-bold "> message - </span> 
+                     {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                    </p>
+                    <!-- <p>
+                      To - {{request.user.name}}
+                    </p> -->
+                  </div>
+                  
+                  <div class="card-footer text-muted">
+    
+                  </div>      
+                </div>
+              </div>
+          </div>
+        </div> 
+        <div class="col-12">
+          <div class="card shadow-lg">
+            <div class="card-header bg-info">
+              <h3 class=" h5 text-light text-center fw-bold">
+                Notification from Admin</h3>
+            </div>
             {% for a in studentNote %}
               <div class="card-body">
                 <div class="card col-5">
@@ -46,9 +78,9 @@
                     <div>  <span class="fw-bold "> Created At -  </span>{{a.created_at}}</div>
                     <div>  <span class="fw-bold "> Updated At - </span> {{a.updated_at}}</div>
                   </div>
-            {% empty %}
-                  <p>student has no courses</p>
-            {% endfor %}          
+                  {% empty %}
+                        <p>student has no notification form admin</p>
+                  {% endfor %}          
                 </div>
               </div>
           </div>
