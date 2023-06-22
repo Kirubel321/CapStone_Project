@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth import update_session_auth_hash
 # Create your views here.
 
 class CustomPasswordResetView(auth_views.PasswordResetView):
@@ -81,6 +82,8 @@ def register_view(request):
     context = {'form':form, 'message': messages}
     return render(request, 'registration.html', context)
 
+
+@login_required()
 def change_password(request):
     if request.method == 'POST':
         form = PasswordChangeForm(request.user, request.POST)
@@ -88,7 +91,7 @@ def change_password(request):
             user = form.save()
             update_session_auth_hash(request, user)  # Important to keep the user logged in
             messages.success(request, 'Your password was successfully updated!')
-            return redirect('home')  # Replace 'home' with the desired URL after password change
+            return redirect('home_url')  # Replace 'home' with the desired URL after password change
         else:
             messages.error(request, 'Please correct the error below.')
     else:
