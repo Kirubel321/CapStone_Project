@@ -24,6 +24,7 @@ urlpatterns = [
     path('', include('samsApp.urls')),
     path('admin/', admin.site.urls),
     path('avatar/', include('avatar.urls')),
+    path('accounts/', include('django.contrib.auth.urls')),
 ] 
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
